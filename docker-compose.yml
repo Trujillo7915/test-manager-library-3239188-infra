@@ -20,6 +20,46 @@ services:
       timeout: 5s
       retries: 5
 
+  api:
+    build:
+      context: ../test-manager-library-3239188-api
+      dockerfile: Dockerfile
+    container_name: manager_library_api
+    restart: unless-stopped
+    environment:
+      APP_NAME: ManagerLibrary
+      APP_ENV: local
+      APP_KEY: base64:4D5L5H4qf3N0J4T8K7M1P9Q3S5U7W9Y1B3D5F7H9J1L=
+      APP_DEBUG: "true"
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: library
+      DB_USERNAME: library
+      DB_PASSWORD: library_secret
+      DB_SCHEMA: library
+      JWT_SECRET: sdd_library_3239188_secret_jwt_token_sign_key_adso
+      JWT_TTL_HOURS: 8
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: admin_secret_pass
+      CORS_ORIGIN: http://localhost:5173
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  app:
+    build:
+      context: ../test-manager-library-3239188-app
+      dockerfile: Dockerfile
+    container_name: manager_library_app
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
 volumes:
   db_data:
     name: manager_library_db_data
